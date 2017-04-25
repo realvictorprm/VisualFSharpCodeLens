@@ -1,0 +1,9 @@
+*.dll
+*.xml
+*.rtf
+*.nupkg
+CodeLensTest/packages
+CodeLensTest/CodeLensTest/bin
+CodeLensTest/CodeLensTest/obj
+CodeLensTest/CodeLens/bin
+CodeLensTest/CodeLens/obj

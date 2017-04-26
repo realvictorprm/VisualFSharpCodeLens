@@ -89,16 +89,20 @@ type internal CodeLensAdornment(view:IWpfTextView, textDocumentFactory:ITextDocu
                 let! (options, _) =
                      checker.GetProjectOptionsFromScript(filePath, source)
 
-                let! (parserFileResults, checkFileResults) = 
+                let! _, checkFileResults = 
                     checker.GetBackgroundCheckResultsForFileInProject(filePath, options)
+                
+                let! symbolUses = checkFileResults.GetAllUsesOfAllSymbolsInFile()
 
                 let applyCodeLens bufferPosition text =
                     let DoUI () = 
                         try
                             let line = view.TextViewLines.GetTextViewLineContainingBufferPosition(bufferPosition)
-                            let offset = match [0 .. line.Length - 1] |> Seq.tryFind(fun i -> not (Char.IsWhiteSpace (line.Start.Add(i).GetChar()))) with
-                                         | Some v -> v
-                                         | None -> 0
+                            
+                            let offset = 
+                                [0..line.Length - 1] |> Seq.tryFind (fun i -> not (Char.IsWhiteSpace (line.Start.Add(i).GetChar())))
+                                |> Option.defaultValue 0
+
                             let realStart = line.Start.Add(offset)
                             let span = SnapshotSpan(line.Snapshot, Span.FromBounds(int realStart, int line.End))
                             let geometry = view.TextViewLines.GetMarkerGeometry(span)
@@ -109,15 +113,17 @@ type internal CodeLensAdornment(view:IWpfTextView, textDocumentFactory:ITextDocu
                             if line.VisibilityState = VisibilityState.Unattached then view.DisplayTextLineContainingBufferPosition(line.Start, 0., ViewRelativePosition.Top)
                         with
                         | _ -> ()
-                    Application.Current.Dispatcher.Invoke(Action(fun _ -> DoUI ()))
+                    
+                    Application.Current.Dispatcher.Invoke(fun _ -> DoUI())
                 
-                let useResults (funcOrVal:FSharpMemberOrFunctionOrValue) =
+                let useResults (displayContext: FSharpDisplayContext, func: FSharpMemberOrFunctionOrValue) =
                     try
-                        let lineNumber = funcOrVal.DeclarationLocation.StartLine - 1;
+                        let lineNumber = func.DeclarationLocation.StartLine
+                        
                         if lineNumber >= 0 || lineNumber < view.TextSnapshot.LineCount then
-                            let typeName = funcOrVal.FullType.ToString()
+                            let typeName = func.FullType.Format(displayContext)
                             let bufferPosition = view.TextSnapshot.GetLineFromLineNumber(lineNumber).Start
-                            if not (codeLensLines.ContainsKey(lineNumber)) then 
+                            if not (codeLensLines.ContainsKey lineNumber) then 
                                 codeLensLines.[lineNumber] <- typeName
                                 applyCodeLens bufferPosition typeName
                     with
@@ -127,19 +133,12 @@ type internal CodeLensAdornment(view:IWpfTextView, textDocumentFactory:ITextDocu
                 //    view.VisualSnapshot.Lines
                 //    |> Seq.iter(fun line -> view.DisplayTextLineContainingBufferPosition(line.Start, 25., ViewRelativePosition.Top))
 
-                let rec recursiveVisitNestedEntities (entity:FSharpEntity) =
-                    entity.MembersFunctionsAndValues |> Seq.iter useResults
-                    entity.NestedEntities |> Seq.iter recursiveVisitNestedEntities
-                    
-
-                for entity in checkFileResults.PartialAssemblySignature.Entities do
-
-                    entity.NestedEntities |> Seq.iter recursiveVisitNestedEntities
-
-                    for funcOrVal in entity.MembersFunctionsAndValues do
-                        useResults funcOrVal
-
-                
+                for symbolUse in symbolUses do
+                    if symbolUse.IsFromDefinition then
+                        match symbolUse.Symbol with
+                        | :? FSharpMemberOrFunctionOrValue as func -> useResults (symbolUse.DisplayContext, func)
+                        | _ -> ()
+                        
                 Application.Current.Dispatcher.Invoke(Action(fun _ -> view.VisualElement.InvalidateArrange()))
             with
             | _ -> () // TODO: Should report error
@@ -210,7 +209,3 @@ type internal CodeLensProvider
             
 
      
-
-    
-
-    

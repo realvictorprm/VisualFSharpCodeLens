@@ -3,7 +3,7 @@
   <Metadata>
     <Identity Id="CodeLensTest.Victor P. R. Müller.9e1dafc2-abaa-45ee-8239-f78bd29d8b78" Version="1.0" Language="en-US" Publisher="Victor P. R. Müller" />
     <DisplayName>CodeLensTest</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description xml:space="preserve">Code lens for F#Code lens for F#</Description>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
@@ -15,7 +15,7 @@
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
   </Prerequisites>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" Path="|CodeLens|" d:ProjectName="CodeLens" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="CodeLensMain" Path="|CodeLensMain|" />
   </Assets>
 </PackageManifest>
 <!--

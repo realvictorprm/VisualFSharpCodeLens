@@ -1,4 +1,4 @@
-﻿namespace CodeLens.AssemblyInfo
+﻿namespace CodeLensMain.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[<assembly: AssemblyTitle("CodeLens")>]
+[<assembly: AssemblyTitle("CodeLensMain")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("CodeLens")>]
+[<assembly: AssemblyProduct("CodeLensMain")>]
 [<assembly: AssemblyCopyright("Copyright ©  2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("9047330b-f9bd-4e56-8e82-0d2d2f56e77b")>]
+[<assembly: Guid("d8f9b7df-89cb-4b0c-8801-07307838217d")>]
 
 // Version information for an assembly consists of the following four values:
 // 
